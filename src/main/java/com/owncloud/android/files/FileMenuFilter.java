@@ -258,7 +258,7 @@ public class FileMenuFilter {
                 capability.getRichDocumentsOptionalMimeTypeList().contains(mimeType)) &&
             capability.getRichDocumentsDirectEditing().isTrue()) {
 
-            String openWith = mContext.getResources().getString(R.string.actionbar_open_as_richdocument);
+            String openWith = mContext.getResources().getString(R.string.actionbar_open_as_richdocument_parameter);
             String productName = capability.getRichDocumentsProductName();
             MenuItem item = menu.findItem(R.id.action_open_file_as_richdocument);
 
