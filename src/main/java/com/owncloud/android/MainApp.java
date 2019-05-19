@@ -48,9 +48,9 @@ import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.appinfo.AppInfo;
 import com.nextcloud.client.di.ActivityInjector;
 import com.nextcloud.client.di.DaggerAppComponent;
+import com.nextcloud.client.onboarding.OnboardingService;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.preferences.AppPreferencesImpl;
-import com.nextcloud.client.whatsnew.WhatsNewService;
 import com.owncloud.android.authentication.PassCodeManager;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.MediaFolder;
@@ -155,7 +155,7 @@ public class MainApp extends MultiDexApplication implements
     protected AppInfo appInfo;
 
     @Inject
-    protected WhatsNewService whatsNew;
+    protected OnboardingService whatsNew;
 
     private PassCodeManager passCodeManager;
 

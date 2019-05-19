@@ -26,6 +26,11 @@ import androidx.annotation.Nullable;
 
 public interface UserAccountManager extends CurrentAccountProvider {
     /**
+     * Remove all NextCloud accounts from OS account manager.
+     */
+    void removeAllAccounts();
+
+    /**
      * Get configured NextCloud's user accounts.
      *
      * @return Array of accounts or empty array, if accounts are not configured.
