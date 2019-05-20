@@ -99,29 +99,6 @@ public final class AccountUtils {
         return accountManager.getAccountsByType(MainApp.getAccountType(context));
     }
 
-
-    public static boolean exists(Account account, Context context) {
-        Account[] ocAccounts = getAccounts(context);
-
-        if (account != null && account.name != null) {
-            int lastAtPos = account.name.lastIndexOf('@');
-            String hostAndPort = account.name.substring(lastAtPos + 1);
-            String username = account.name.substring(0, lastAtPos);
-            String otherHostAndPort;
-            String otherUsername;
-            for (Account otherAccount : ocAccounts) {
-                lastAtPos = otherAccount.name.lastIndexOf('@');
-                otherHostAndPort = otherAccount.name.substring(lastAtPos + 1);
-                otherUsername = otherAccount.name.substring(0, lastAtPos);
-                if (otherHostAndPort.equals(hostAndPort) &&
-                        otherUsername.equalsIgnoreCase(username)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
     /**
      * Returns owncloud account identified by accountName or null if it does not exist.
      * @param context the context
@@ -176,7 +153,7 @@ public final class AccountUtils {
 
         appPrefs.apply();
     }
-
+    
     /**
      * Access the version of the OC server corresponding to an account SAVED IN THE ACCOUNTMANAGER
      *
@@ -202,15 +179,5 @@ public final class AccountUtils {
 
     public static boolean hasSearchSupport(Account account) {
         return getServerVersion(account).isSearchSupported();
-    }
-
-    /**
-     * Checks if an account owns the file (file's ownerId is the same as account name)
-     * @param file File to check
-     * @param account account to compare
-     * @return false if ownerId is not set or owner is a different account
-     */
-    public static boolean accountOwnsFile(OCFile file, Account account) {
-        return !TextUtils.isEmpty(file.getOwnerId()) && account.name.split("@")[0].equals(file.getOwnerId());
     }
 }

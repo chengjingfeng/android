@@ -20,6 +20,9 @@
 package com.nextcloud.client.account;
 
 import android.accounts.Account;
+import android.content.Context;
+
+import com.owncloud.android.datamodel.OCFile;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,12 +37,31 @@ public interface UserAccountManager extends CurrentAccountProvider {
     Account[] getAccounts();
 
     /**
+     * Check if Nextcloud account is registered in {@link android.accounts.AccountManager}
+     *
+     * @param account Account to check for
+     * @return true if account is registered, false otherwise
+     */
+    boolean exists(Account account);
+
+    /**
      * Verifies that every account has userId set.
      */
     void migrateUserId();
 
     @Nullable
     Account getAccountByName(String name);
+
+    void resetOwnCloudAccount();
+
+    /**
+     * Checks if an account owns the file (file's ownerId is the same as account name)
+     *
+     * @param file File to check
+     * @param account account to compare
+     * @return false if ownerId is not set or owner is a different account
+     */
+    boolean accountOwnsFile(OCFile file, Account account);
 
     /**
      * Extract username from account.

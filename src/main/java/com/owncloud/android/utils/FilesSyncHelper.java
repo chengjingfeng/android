@@ -244,7 +244,11 @@ public final class FilesSyncHelper {
         new Thread(() -> {
             if (!Device.getNetworkType(context).equals(JobRequest.NetworkType.ANY) &&
                     !ConnectivityUtils.isInternetWalled(context)) {
-                uploadRequester.retryFailedUploads(context, null, uploadsStorageManager, null);
+                uploadRequester.retryFailedUploads(context,
+                                                   null,
+                                                   uploadsStorageManager,
+                                                   accountManager,
+                                                   null);
             }
         }).start();
     }

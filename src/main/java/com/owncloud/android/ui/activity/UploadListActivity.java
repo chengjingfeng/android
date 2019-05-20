@@ -172,7 +172,7 @@ public class UploadListActivity extends FileActivity {
         emptyContentHeadline.setText(noResultsHeadline);
         emptyContentMessage.setText(noResultsMessage);
 
-        uploadListAdapter = new UploadListAdapter(this, uploadsStorageManager);
+        uploadListAdapter = new UploadListAdapter(this, uploadsStorageManager, userAccountManager);
 
         final GridLayoutManager lm = new GridLayoutManager(this, 1);
         uploadListAdapter.setLayoutManager(lm);
@@ -216,7 +216,11 @@ public class UploadListActivity extends FileActivity {
 
         // retry failed uploads
         FileUploader.UploadRequester requester = new FileUploader.UploadRequester();
-        new Thread(() -> requester.retryFailedUploads(this, null, uploadsStorageManager,null)).start();
+        new Thread(() -> requester.retryFailedUploads(this,
+                                                      null,
+                                                      uploadsStorageManager,
+                                                      userAccountManager,
+                                                      null)).start();
 
         // update UI
         uploadListAdapter.loadUploadItemsFromDb();

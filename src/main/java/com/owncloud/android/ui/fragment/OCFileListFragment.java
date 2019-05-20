@@ -359,6 +359,7 @@ public class OCFileListFragment extends ExtendedListFragment implements
             getActivity(),
             accountManager.getCurrentAccount(),
             preferences,
+            accountManager,
             mContainerActivity,
             this,
             hideItemOptions,

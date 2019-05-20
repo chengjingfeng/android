@@ -250,11 +250,8 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
     private TextInputLayout mPasswordInputLayout;
     private boolean forceOldLoginMethod;
 
-    @Inject
-    UserAccountManager accountManager;
-
-    @Inject
-    protected AppPreferences preferences;
+    @Inject UserAccountManager accountManager;
+    @Inject AppPreferences preferences;
 
     /**
      * {@inheritDoc}
@@ -1656,7 +1653,7 @@ public class AuthenticatorActivity extends AccountAuthenticatorActivity
 
         String accountName = com.owncloud.android.lib.common.accounts.AccountUtils.buildAccountName(uri, loginName);
         Account newAccount = new Account(accountName, accountType);
-        if (AccountUtils.exists(newAccount, getApplicationContext())) {
+        if (accountManager.exists(newAccount)) {
             // fail - not a new account, but an existing one; disallow
             RemoteOperationResult result = new RemoteOperationResult(ResultCode.ACCOUNT_NOT_NEW);
 

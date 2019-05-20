@@ -34,6 +34,7 @@ import android.text.format.DateFormat;
 
 import com.evernote.android.job.Job;
 import com.evernote.android.job.util.support.PersistableBundleCompat;
+import com.nextcloud.client.account.UserAccountManager;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.AccountUtils;
@@ -65,9 +66,14 @@ public class ContactsBackupJob extends Job {
     public static final String TAG = "ContactsBackupJob";
     public static final String ACCOUNT = "account";
     public static final String FORCE = "force";
+
     private OperationsServiceConnection operationsServiceConnection;
     private OperationsService.OperationsServiceBinder operationsServiceBinder;
+    private UserAccountManager accountManager;
 
+    public ContactsBackupJob(UserAccountManager accountManager) {
+        this.accountManager = accountManager;
+    }
 
     @NonNull
     @Override
@@ -77,7 +83,7 @@ public class ContactsBackupJob extends Job {
 
         boolean force = bundle.getBoolean(FORCE, false);
 
-        final Account account = AccountUtils.getOwnCloudAccountByName(context, bundle.getString(ACCOUNT, ""));
+        final Account account = accountManager.getAccountByName(bundle.getString(ACCOUNT, ""));
 
         ArbitraryDataProvider arbitraryDataProvider = new ArbitraryDataProvider(getContext().getContentResolver());
         Long lastExecution = arbitraryDataProvider.getLongValue(account,

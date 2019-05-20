@@ -77,10 +77,12 @@ import java.security.SecureRandom;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
+import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import dagger.android.AndroidInjection;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class NotificationJob extends Job {
@@ -226,7 +228,7 @@ public class NotificationJob extends Job {
     }
 
     private void fetchCompleteNotification(Account account, DecryptedPushMessage decryptedPushMessage) {
-        Account currentAccount = AccountUtils.getOwnCloudAccountByName(context, account.name);
+        Account currentAccount = accountManager.getAccountByName(account.name);
 
         if (currentAccount == null) {
             Log_OC.e(this, "Account may not be null");
@@ -254,8 +256,11 @@ public class NotificationJob extends Job {
 
     public static class NotificationReceiver extends BroadcastReceiver {
 
+        @Inject UserAccountManager accountManager;
+
         @Override
         public void onReceive(Context context, Intent intent) {
+            AndroidInjection.inject(this, context);
             int numericNotificationId = intent.getIntExtra(NUMERIC_NOTIFICATION_ID, 0);
             int pushNotificationId = intent.getIntExtra(PUSH_NOTIFICATION_ID, 0);
             String accountName = intent.getStringExtra(NotificationJob.KEY_NOTIFICATION_ACCOUNT);
@@ -278,7 +283,7 @@ public class NotificationJob extends Job {
                     }
 
                     try {
-                        Account currentAccount = AccountUtils.getOwnCloudAccountByName(context, accountName);
+                        Account currentAccount = accountManager.getAccountByName(accountName);
 
                         if (currentAccount == null) {
                             Log_OC.e(this, "Account may not be null");

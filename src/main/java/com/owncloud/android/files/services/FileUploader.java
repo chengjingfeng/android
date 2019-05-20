@@ -129,8 +129,7 @@ public class FileUploader extends Service
 
     private Notification mNotification;
 
-    @Inject
-    protected UserAccountManager accountManager;
+    @Inject UserAccountManager accountManager;
 
     /**
      * Call this Service with only this Intent key if all pending uploads are to be retried.
@@ -366,14 +365,10 @@ public class FileUploader extends Service
         /**
          * Call to retry upload identified by remotePath
          */
-        public void retry (Context context, OCUpload upload) {
+        public void retry (Context context, UserAccountManager accountManager, OCUpload upload) {
             if (upload != null && context != null) {
-                Account account = AccountUtils.getOwnCloudAccountByName(
-                    context,
-                    upload.getAccountName()
-                );
+                Account account = accountManager.getAccountByName(upload.getAccountName());
                 retry(context, account, upload);
-
             } else {
                 throw new IllegalArgumentException("Null parameter!");
             }
@@ -401,6 +396,7 @@ public class FileUploader extends Service
             @NonNull final Context context,
             @Nullable Account account,
             @NotNull final UploadsStorageManager uploadsStorageManager,
+            @NotNull final UserAccountManager accountManager,
             @Nullable final UploadResult uploadResult
         ) {
             OCUpload[] failedUploads = uploadsStorageManager.getFailedUploads();
@@ -419,7 +415,7 @@ public class FileUploader extends Service
                 resultMatch = uploadResult == null || uploadResult.equals(failedUpload.getLastResult());
                 if (accountMatch && resultMatch) {
                     if (currentAccount == null || !currentAccount.name.equals(failedUpload.getAccountName())) {
-                        currentAccount = failedUpload.getAccount(context);
+                        currentAccount = failedUpload.getAccount(accountManager);
                     }
 
                     if (!new File(failedUpload.getLocalPath()).exists()) {
@@ -552,7 +548,7 @@ public class FileUploader extends Service
         }
 
         Account account = intent.getParcelableExtra(KEY_ACCOUNT);
-        if (!AccountUtils.exists(account, getApplicationContext())) {
+        if (!accountManager.exists(account)) {
             return Service.START_NOT_STICKY;
         }
 
@@ -766,8 +762,7 @@ public class FileUploader extends Service
     @Override
     public void onAccountsUpdated(Account[] accounts) {
         // Review current upload, and cancel it if its account doen't exist
-        if (mCurrentUpload != null &&
-                !AccountUtils.exists(mCurrentUpload.getAccount(), getApplicationContext())) {
+        if (mCurrentUpload != null && !accountManager.exists(mCurrentUpload.getAccount())) {
             mCurrentUpload.cancel();
         }
         // The rest of uploads are cancelled when they try to start
@@ -1061,7 +1056,7 @@ public class FileUploader extends Service
         if (mCurrentUpload != null) {
 
             /// Check account existence
-            if (!AccountUtils.exists(mCurrentUpload.getAccount(), this)) {
+            if (!accountManager.exists(mCurrentUpload.getAccount())) {
                 Log_OC.w(TAG, "Account " + mCurrentUpload.getAccount().name +
                         " does not exist anymore -> cancelling all its uploads");
                 cancelUploadsForAccount(mCurrentUpload.getAccount());

@@ -40,6 +40,7 @@ import android.widget.TextView;
 
 import com.afollestad.sectionedrecyclerview.SectionedRecyclerViewAdapter;
 import com.afollestad.sectionedrecyclerview.SectionedViewHolder;
+import com.nextcloud.client.account.UserAccountManager;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.AccountUtils;
 import com.owncloud.android.datamodel.OCFile;
@@ -72,6 +73,7 @@ public class UploadListAdapter extends SectionedRecyclerViewAdapter<SectionedVie
     private ProgressListener progressListener;
     private FileActivity parentActivity;
     private UploadsStorageManager uploadsStorageManager;
+    private UserAccountManager accountManager;
     private UploadGroup[] uploadGroups;
 
     @Override
@@ -128,6 +130,7 @@ public class UploadListAdapter extends SectionedRecyclerViewAdapter<SectionedVie
                             parentActivity,
                             null,
                             uploadsStorageManager,
+                            accountManager,
                             null))
                         .start();
                     break;
@@ -146,10 +149,13 @@ public class UploadListAdapter extends SectionedRecyclerViewAdapter<SectionedVie
         // not needed
     }
 
-    public UploadListAdapter(final FileActivity fileActivity, final UploadsStorageManager uploadsStorageManager) {
+    public UploadListAdapter(final FileActivity fileActivity,
+                             final UploadsStorageManager uploadsStorageManager,
+                             final UserAccountManager accountManager) {
         Log_OC.d(TAG, "UploadListAdapter");
         this.parentActivity = fileActivity;
         this.uploadsStorageManager = uploadsStorageManager;
+        this.accountManager = accountManager;
         uploadGroups = new UploadGroup[3];
 
         shouldShowHeadersForEmptySections(false);
@@ -213,7 +219,7 @@ public class UploadListAdapter extends SectionedRecyclerViewAdapter<SectionedVie
                                                                          DateUtils.SECOND_IN_MILLIS, DateUtils.WEEK_IN_MILLIS, 0);
         itemViewHolder.date.setText(dateString);
 
-        Account account = AccountUtils.getOwnCloudAccountByName(parentActivity, item.getAccountName());
+        Account account = accountManager.getAccountByName(item.getAccountName());
         if (account != null) {
             itemViewHolder.account.setText(DisplayUtils.getAccountNameDisplayText(parentActivity, account,
                                                                                   account.name, item.getAccountName()));
@@ -314,14 +320,14 @@ public class UploadListAdapter extends SectionedRecyclerViewAdapter<SectionedVie
             if (UploadResult.CREDENTIAL_ERROR == item.getLastResult()) {
                 itemViewHolder.itemLayout.setOnClickListener(v ->
                                                                  parentActivity.getFileOperationsHelper().checkCurrentCredentials(
-                                                                     item.getAccount(parentActivity)));
+                                                                     item.getAccount(accountManager)));
             } else {
                 // not a credentials error
                 itemViewHolder.itemLayout.setOnClickListener(v -> {
                     File file = new File(item.getLocalPath());
                     if (file.exists()) {
                         FileUploader.UploadRequester requester = new FileUploader.UploadRequester();
-                        requester.retry(parentActivity, item);
+                        requester.retry(parentActivity, accountManager, item);
                         loadUploadItemsFromDb();
                     } else {
                         DisplayUtils.showSnackMessage(

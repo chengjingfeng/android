@@ -37,7 +37,6 @@ import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
-import com.owncloud.android.authentication.AccountUtils;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.FilesystemDataProvider;
 import com.owncloud.android.datamodel.MediaFolderType;
@@ -157,7 +156,7 @@ public class FilesSyncJob extends Job {
         boolean needsWifi;
         File file;
         ArbitraryDataProvider arbitraryDataProvider;
-        Account account = AccountUtils.getOwnCloudAccountByName(context, syncedFolder.getAccount());
+        Account account = userAccountManager.getAccountByName(syncedFolder.getAccount());
 
         if (lightVersion) {
             arbitraryDataProvider = new ArbitraryDataProvider(context.getContentResolver());
